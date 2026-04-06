@@ -1,0 +1,255 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "type": "stat",
+      "title": "HTTP Requests Total",
+      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {"steps": [{"color": "#73BF69", "value": null}]}
+        }
+      },
+      "targets": [
+        {"expr": "sum(cppe_http_requests_total)", "refId": "A"}
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Active Incidents",
+      "gridPos": {"h": 6, "w": 6, "x": 6, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {"steps": [
+            {"color": "#73BF69", "value": null},
+            {"color": "#FF9830", "value": 1},
+            {"color": "#F2495C", "value": 3}
+          ]}
+        }
+      },
+      "targets": [
+        {"expr": "cppe_incidents_open", "refId": "A"}
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Pipeline Runs (Passed)",
+      "gridPos": {"h": 6, "w": 6, "x": 12, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {"steps": [{"color": "#73BF69", "value": null}]}
+        }
+      },
+      "targets": [
+        {"expr": "sum(cppe_pipeline_runs_total{status=\"passed\"})", "refId": "A"}
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Pipeline Runs (Failed)",
+      "gridPos": {"h": 6, "w": 6, "x": 18, "y": 0},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {"steps": [
+            {"color": "#73BF69", "value": null},
+            {"color": "#FF9830", "value": 1},
+            {"color": "#F2495C", "value": 5}
+          ]}
+        }
+      },
+      "targets": [
+        {"expr": "sum(cppe_pipeline_runs_total{status=\"failed\"})", "refId": "A"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP Request Rate (per minute)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6},
+      "fieldConfig": {
+        "defaults": {
+          "custom": {"lineWidth": 2, "fillOpacity": 15, "gradientMode": "scheme"}
+        }
+      },
+      "targets": [
+        {"expr": "sum(rate(cppe_http_requests_total[1m])) by (route)", "legendFormat": "{{route}}", "refId": "A"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Pipeline Runs by Status",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6},
+      "fieldConfig": {
+        "defaults": {
+          "custom": {"lineWidth": 2, "fillOpacity": 15, "gradientMode": "scheme"}
+        }
+      },
+      "targets": [
+        {"expr": "sum(rate(cppe_pipeline_runs_total[5m])) by (status)", "legendFormat": "{{status}}", "refId": "A"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "RCA Analysis Latency (seconds)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 14},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {"lineWidth": 2, "fillOpacity": 10}
+        }
+      },
+      "targets": [
+        {"expr": "cppe_rca_latency_seconds", "legendFormat": "{{provider}}", "refId": "A"}
+      ]
+    },
+    {
+      "type": "piechart",
+      "title": "RCA Provider Distribution",
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 14},
+      "targets": [
+        {"expr": "sum(cppe_rca_requests_total) by (provider)", "legendFormat": "{{provider}}", "refId": "A"}
+      ]
+    },
+    {
+      "type": "bargauge",
+      "title": "RCA Requests by Status",
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 14},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {"steps": [
+            {"color": "#73BF69", "value": null},
+            {"color": "#F2495C", "value": null}
+          ]}
+        }
+      },
+      "targets": [
+        {"expr": "sum(cppe_rca_requests_total) by (status)", "legendFormat": "{{status}}", "refId": "A"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Node.js Process Memory (MB)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 22},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decmbytes",
+          "custom": {"lineWidth": 2, "fillOpacity": 10}
+        }
+      },
+      "targets": [
+        {"expr": "cppe_process_resident_memory_bytes / 1024 / 1024", "legendFormat": "RSS Memory", "refId": "A"},
+        {"expr": "cppe_nodejs_heap_size_used_bytes / 1024 / 1024", "legendFormat": "Heap Used", "refId": "B"}
+      ]
+    },
+    {
+      "type": "gauge",
+      "title": "Open Incidents",
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 22},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "min": 0,
+          "max": 10,
+          "thresholds": {"steps": [
+            {"color": "#73BF69", "value": null},
+            {"color": "#FF9830", "value": 2},
+            {"color": "#F2495C", "value": 5}
+          ]}
+        }
+      },
+      "targets": [
+        {"expr": "cppe_incidents_open", "refId": "A"}
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Node.js Active Handles",
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 22},
+      "targets": [
+        {"expr": "cppe_nodejs_active_handles_total", "refId": "A"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "RCA Provider Availability (1=up, 0=down)",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 30},
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "custom": {"lineWidth": 2, "fillOpacity": 10}
+        }
+      },
+      "targets": [
+        {"expr": "cppe_rca_provider_up", "legendFormat": "{{provider}}", "refId": "A"}
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Bedrock/Lambda Configured",
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 30},
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {"text": "No"},
+                "1": {"text": "Yes"}
+              }
+            }
+          ]
+        }
+      },
+      "targets": [
+        {"expr": "max(cppe_rca_provider_configured{provider=\"bedrock\"})", "refId": "A"}
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Bedrock/Lambda Reachable",
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 30},
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {"text": "No"},
+                "1": {"text": "Yes"}
+              }
+            }
+          ]
+        }
+      },
+      "targets": [
+        {"expr": "max(cppe_rca_provider_up{provider=\"bedrock\"})", "refId": "A"}
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": ["moraai", "cicd", "devops", "monitoring"],
+  "templating": {"list": []},
+  "time": {"from": "now-1h", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "MoraAI Platform Overview",
+  "uid": "moraai-platform-overview",
+  "version": 2,
+  "weekStart": ""
+}

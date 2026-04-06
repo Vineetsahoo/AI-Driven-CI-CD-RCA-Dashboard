@@ -1,0 +1,85 @@
+---
+- name: Ensure dependencies are installed
+  become: true
+  ansible.builtin.yum:
+    name:
+      - git
+      - docker
+    state: present
+
+- name: Ensure docker service is running
+  become: true
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Stop host ollama service to avoid port 11434 conflict
+  become: true
+  ansible.builtin.service:
+    name: ollama
+    state: stopped
+    enabled: false
+  ignore_errors: true
+
+- name: Ensure docker-compose binary exists
+  become: true
+  ansible.builtin.get_url:
+    url: https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: "0755"
+
+- name: Ensure project root exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ project_root }}"
+    state: directory
+    owner: ec2-user
+    group: ec2-user
+    mode: "0755"
+
+- name: Remove stale nested paths from previous copy runs
+  become: false
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ project_root }}/public/public"
+    - "{{ project_root }}/monitoring/monitoring"
+    - "{{ project_root }}/monitoring/loki/loki-config.yml"
+
+- name: Copy deployable project files from control node
+  become: false
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: ec2-user
+    group: ec2-user
+    mode: preserve
+  loop:
+    - { src: "{{ local_project_source }}/Dockerfile", dest: "{{ project_root }}/Dockerfile" }
+    - { src: "{{ local_project_source }}/docker-compose.yml", dest: "{{ project_root }}/docker-compose.yml" }
+    - { src: "{{ local_project_source }}/package.json", dest: "{{ project_root }}/package.json" }
+    - { src: "{{ local_project_source }}/package-lock.json", dest: "{{ project_root }}/package-lock.json" }
+    - { src: "{{ local_project_source }}/server.js", dest: "{{ project_root }}/server.js" }
+    - { src: "{{ local_project_source }}/frontend/", dest: "{{ project_root }}/frontend/" }
+    - { src: "{{ local_project_source }}/monitoring/", dest: "{{ project_root }}/monitoring/" }
+
+- name: Write runtime environment for docker compose
+  become: false
+  ansible.builtin.copy:
+    dest: "{{ project_root }}/.env"
+    owner: ec2-user
+    group: ec2-user
+    mode: "0644"
+    content: |
+      RCA_API_URL={{ rca_api_url }}
+      BEDROCK_MODEL_ID={{ bedrock_model_id }}
+      OLLAMA_ENABLED=false
+
+- name: Build and run stack with Docker Compose
+  become: true
+  ansible.builtin.command: /usr/local/bin/docker-compose up -d --build
+  args:
+    chdir: "{{ project_root }}"
+  changed_when: true

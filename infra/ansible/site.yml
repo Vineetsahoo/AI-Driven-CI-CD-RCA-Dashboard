@@ -1,0 +1,7 @@
+---
+- name: Configure and deploy CPPE platform
+  hosts: platform
+  gather_facts: true
+  become: true
+  roles:
+    - platform

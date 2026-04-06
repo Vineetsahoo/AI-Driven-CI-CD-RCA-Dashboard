@@ -1,0 +1,41 @@
+---
+- name: Build and push MoraAI image to ECR
+  hosts: platform
+  gather_facts: false
+  become: false
+  vars:
+    aws_region: us-east-1
+    ecr_registry: 982081089142.dkr.ecr.us-east-1.amazonaws.com
+    ecr_repository: moraai
+    image_tag: latest
+    project_root: /opt/MoraAI
+  tasks:
+    - name: Ensure ECR password is provided via environment
+      ansible.builtin.assert:
+        that:
+          - lookup('env', 'ECR_PASSWORD') | length > 0
+        fail_msg: "ECR_PASSWORD environment variable is required"
+      changed_when: false
+
+    - name: Login to ECR on remote host
+      become: true
+      ansible.builtin.shell: |
+        set -euo pipefail
+        echo '{{ lookup("env", "ECR_PASSWORD") }}' | docker login --username AWS --password-stdin {{ ecr_registry }}
+      args:
+        executable: /bin/bash
+
+    - name: Build MoraAI image on remote host
+      become: true
+      ansible.builtin.command:
+        cmd: docker build -t moraai:{{ image_tag }} {{ project_root }}
+
+    - name: Tag image for ECR
+      become: true
+      ansible.builtin.command:
+        cmd: docker tag moraai:{{ image_tag }} {{ ecr_registry }}/{{ ecr_repository }}:{{ image_tag }}
+
+    - name: Push image to ECR
+      become: true
+      ansible.builtin.command:
+        cmd: docker push {{ ecr_registry }}/{{ ecr_repository }}:{{ image_tag }}

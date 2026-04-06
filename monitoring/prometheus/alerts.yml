@@ -1,0 +1,62 @@
+groups:
+  - name: moraai-platform-alerts
+    rules:
+      - alert: CPPEAppDown
+        expr: up{job="moraai-app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: MoraAI
+        annotations:
+          summary: "MoraAI app target is down"
+          description: "Prometheus cannot scrape moraai-app for more than 1 minute."
+
+      - alert: CPPENodeExporterDown
+        expr: up{job="node-exporter"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          service: node-exporter
+        annotations:
+          summary: "Node exporter target is down"
+          description: "Prometheus cannot scrape node-exporter for more than 2 minutes."
+
+      - alert: CPPEHigh5xxRate
+        expr: sum(rate(cppe_http_requests_total{status=~"5.."}[5m])) / clamp_min(sum(rate(cppe_http_requests_total[5m])), 0.001) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: MoraAI
+        annotations:
+          summary: "High 5xx error ratio on MoraAI app"
+          description: "More than 5% of MoraAI HTTP requests are failing with 5xx over the last 5 minutes."
+
+      - alert: CPPERCAFallbackToLocal
+        expr: increase(cppe_rca_requests_total{provider="local",status="success"}[10m]) > 0
+        for: 2m
+        labels:
+          severity: warning
+          service: MoraAI
+        annotations:
+          summary: "RCA fell back to local classifier"
+          description: "At least one RCA request used local fallback in the last 10 minutes."
+
+      - alert: CPPEBedrockProviderDown
+        expr: cppe_rca_provider_configured{provider="bedrock"} == 1 and cppe_rca_provider_up{provider="bedrock"} == 0
+        for: 3m
+        labels:
+          severity: warning
+          service: MoraAI
+        annotations:
+          summary: "Bedrock provider configured but unavailable"
+          description: "Bedrock RCA provider is configured but reported unavailable for more than 3 minutes."
+
+      - alert: CPPEIncidentBacklogHigh
+        expr: cppe_incidents_open > 5
+        for: 10m
+        labels:
+          severity: warning
+          service: MoraAI
+        annotations:
+          summary: "Open incidents backlog is high"
+          description: "Open incident count has remained above 5 for more than 10 minutes."

@@ -1,0 +1,7 @@
+project_root: /opt/MoraAI
+compose_file: docker-compose.yml
+local_project_source: /home/vineet/MoraAI
+rca_api_url: https://n52ix6pw08.execute-api.us-east-1.amazonaws.com/prod/analyze
+bedrock_model_id: amazon.nova-lite-v1:0
+ansible_become: true
+ansible_become_timeout: 120

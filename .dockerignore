@@ -1,0 +1,15 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+infra
+docs
+CPPE_extracted.txt
+*.log
+*.tmp
+*.zip
+frontend/node_modules
+frontend/dist
+monitoring
+monitoring/grafana/data

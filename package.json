@@ -1,0 +1,36 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "AI-driven CI/CD failure analysis and remediation demo platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "backend:start": "node server.js",
+    "backend:dev": "node server.js",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:dev:public": "npm --prefix frontend run dev -- --host 0.0.0.0",
+    "frontend:build": "npm --prefix frontend run build",
+    "frontend:preview": "npm --prefix frontend run preview",
+    "cicd:deploy:eks": "bash infra/deploy-cicd-to-eks.sh",
+    "cicd:deploy:eks:wsl": "wsl -d Ubuntu -- bash -lc '~/MoraAI/infra/deploy-cicd-to-eks.sh'",
+    "test": "echo \"No automated tests configured yet\"",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down"
+  },
+  "keywords": [
+    "cicd",
+    "devops",
+    "failure-analysis",
+    "dashboard"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "prom-client": "^15.1.3"
+  }
+}

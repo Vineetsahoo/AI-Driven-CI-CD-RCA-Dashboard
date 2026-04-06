@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Python virtual environments
+.venv/
+venv/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+frontend/dist/
+dist/
+build/
+coverage/
+
+# Environment and secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# Terraform local state/secrets
+*.tfstate
+*.tfstate.*
+.terraform/
+infra/terraform/aws/terraform.tfvars
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
