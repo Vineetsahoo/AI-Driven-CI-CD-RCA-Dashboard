@@ -7,6 +7,7 @@ const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 // ---------------------------------------------------------------------------
 // Prometheus metrics registry
@@ -820,14 +821,14 @@ app.get(/.*/, (_req, res) => {
   res.sendFile(path.join(staticRootPath, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`CI/CD intelligence platform running on http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`CI/CD intelligence platform running on http://${HOST}:${PORT}`);
   console.log(`RCA providers: Bedrock=${RCA_API_URL ? 'configured' : 'disabled'}, Ollama=${OLLAMA_URL}, Local=enabled`);
 });
 
 // Keep provider health metrics fresh for dashboards and alerts.
 setInterval(() => {
-  getRCAProvidersStatus().catch(() => {});
+  void getRCAProvidersStatus();
 }, 60000);
 
-getRCAProvidersStatus().catch(() => {});
+void getRCAProvidersStatus();
