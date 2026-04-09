@@ -4,10 +4,12 @@ The project now runs as a React + TypeScript + Tailwind SaaS-style frontend back
 
 ## Features
 - SaaS template UI (React + Tailwind + shadcn-compatible structure)
+- Multi-page product content routes (Home, Platform, Bedrock, Ollama, Observability, Docs)
 - Live RCA provider status (Bedrock Nova -> Ollama -> Local fallback chain)
 - Incident trigger and remediation workflow (trigger -> approve -> execute)
 - Backend metrics endpoint for Prometheus (`/metrics`)
 - Unified dashboard API for frontend (`/api/saas/dashboard`)
+- GitHub Actions CI and manual CD-to-EKS workflows under `.github/workflows`
 
 ## Local Run
 ```bash
@@ -40,9 +42,10 @@ npm --prefix frontend run dev -- --host 0.0.0.0
 
 ## Project Structure
 - `server.js`: Express backend and RCA + SaaS APIs
-- `frontend/src/components/ui/saa-s-template.tsx`: Main SaaS page template
-- `frontend/src/App.tsx`: Live dashboard actions and incident workflow
+- `frontend/src/App.tsx`: Routed frontend with dashboard + content pages
+- `frontend/src/components/ui/animated-web3-landing-page.tsx`: Main hero and trigger controls
 - `frontend/src/lib/api.ts`: Backend API client for SaaS endpoints
+- `docs/github-actions-cicd-guide.md`: CI/CD and GitHub Actions flow explanation
 
 ## DevOps Stack (Docker + Prometheus + Grafana)
 The repository now includes a monitoring architecture setup:
@@ -53,6 +56,11 @@ The repository now includes a monitoring architecture setup:
 Run everything:
 ```bash
 npm run docker:up
+```
+
+Enable Ollama local model profile:
+```bash
+docker compose --profile local-llm up -d --build
 ```
 
 Stop stack:
@@ -67,6 +75,14 @@ URLs:
 
 Metrics endpoint exposed by backend:
 - `GET /metrics`
+
+## GitHub Actions Flow
+
+- `ci.yml`: install dependencies, validate backend syntax, build frontend, build Docker image.
+- `cd-eks.yml`: manual deploy workflow that builds/pushes image to ECR and rolls out to EKS.
+
+Detailed guide:
+- `docs/github-actions-cicd-guide.md`
 
 ## AWS Infrastructure with Terraform
 Terraform files are under `infra/terraform/aws`.

@@ -462,12 +462,16 @@ async function performRCA(logText, pipelineId) {
   }
 
   // 2. Try Ollama (local LLM)
-  try {
-    console.log('[RCA] Attempting Ollama analysis...');
-    return await analyzeWithOllama(logText, pipelineId);
-  } catch (err) {
-    console.warn('[RCA] Ollama failed, falling back to local:', err.message);
-    rcaRequestsTotal.inc({ provider: 'ollama', status: 'error' });
+  if (OLLAMA_ENABLED) {
+    try {
+      console.log('[RCA] Attempting Ollama analysis...');
+      return await analyzeWithOllama(logText, pipelineId);
+    } catch (err) {
+      console.warn('[RCA] Ollama failed, falling back to local:', err.message);
+      rcaRequestsTotal.inc({ provider: 'ollama', status: 'error' });
+    }
+  } else {
+    console.log('[RCA] Ollama disabled by configuration, skipping to local fallback');
   }
 
   // 3. Local rule-based fallback

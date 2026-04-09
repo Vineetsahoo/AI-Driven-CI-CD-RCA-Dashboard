@@ -39,6 +39,17 @@ From project root:
 npm run docker:up
 ```
 
+If you want Ollama local model fallback in Docker, start with profile:
+
+```bash
+docker compose --profile local-llm up -d --build
+```
+
+Set environment values as needed:
+- `OLLAMA_ENABLED=true`
+- `OLLAMA_MODEL=llama3.2` (or your preferred model)
+- `OLLAMA_URL=http://ollama:11434`
+
 Stop stack:
 
 ```bash
@@ -187,3 +198,19 @@ kubectl get svc -n moraai
    - Ansible on EC2, or
    - EKS with Kubernetes.
 5. Validate app and monitoring endpoints.
+
+## 10) GitHub Actions CI/CD
+
+Workflows available:
+- `.github/workflows/ci.yml` for pull request and branch CI
+- `.github/workflows/cd-eks.yml` for manual EKS deployment
+
+CD workflow input requirements:
+- `aws_role_to_assume`
+- `eks_cluster_name`
+
+Optional CD inputs:
+- `aws_region`
+- `ecr_repository`
+- `k8s_namespace`
+- `k8s_deployment`

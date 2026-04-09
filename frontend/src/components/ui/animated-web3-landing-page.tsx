@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
 type HeroStats = {
   avgSuccessRate: number;
@@ -21,6 +22,14 @@ type Web3HeroAnimatedProps = {
 
 export function Web3HeroAnimated({ stats, pipelineOptions, busyId = "", onTrigger }: Web3HeroAnimatedProps) {
   const pillars = [92, 84, 78, 70, 62, 54, 46, 34, 18, 34, 46, 54, 62, 70, 78, 84, 92];
+  const navItems = [
+    { label: "Platform", href: "/platform" },
+    { label: "Bedrock", href: "/bedrock" },
+    { label: "Ollama", href: "/ollama" },
+    { label: "Observability", href: "/observability" },
+    { label: "Live Data", href: "/#live-data" },
+    { label: "Docs", href: "/docs" }
+  ];
 
   const [isMounted, setIsMounted] = useState(false);
 
@@ -97,18 +106,17 @@ export function Web3HeroAnimated({ stats, pipelineOptions, busyId = "", onTrigge
         <header className="relative z-10">
           <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6 md:px-8">
             <div className="flex items-center gap-3">
-              <div className="h-6 w-6 rounded-full bg-white" />
               <span className="text-lg font-semibold tracking-tight inline-flex items-center gap-2">
                 <Sparkles size={16} />
-                MoraAI NovaOps
+                MoraAI
               </span>
             </div>
 
             <nav className="hidden items-center gap-8 text-sm/6 text-white/80 md:flex">
-              {["Platform", "Bedrock", "Ollama", "Observability", "Live Data", "Docs"].map((i) => (
-                <a key={i} className="hover:text-white" href="#">
-                  {i}
-                </a>
+              {navItems.map((item) => (
+                <Link key={item.label} className="hover:text-white" to={item.href}>
+                  {item.label}
+                </Link>
               ))}
             </nav>
 

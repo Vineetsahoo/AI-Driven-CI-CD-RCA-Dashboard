@@ -41,6 +41,21 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: moraai-ollama-init
+    profiles:
+      - local-llm
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2}
+    entrypoint: ["/bin/sh", "-c"]
+    command: "ollama pull ${OLLAMA_MODEL}"
+    restart: "no"
+
   prometheus:
     image: prom/prometheus:v2.55.1
     container_name: moraai-prometheus
