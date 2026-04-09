@@ -63,6 +63,11 @@ Enable Ollama local model profile:
 docker compose --profile local-llm up -d --build
 ```
 
+Or use npm shortcut:
+```bash
+npm run docker:up:ollama
+```
+
 Stop stack:
 ```bash
 npm run docker:down
@@ -79,6 +84,7 @@ Metrics endpoint exposed by backend:
 ## GitHub Actions Flow
 
 - `ci.yml`: install dependencies, validate backend syntax, build frontend, build Docker image.
+- `ci.yml`: multi-stage jobs (`backend-check`, `frontend-build`, `api-smoke`, `docker-build`).
 - `cd-eks.yml`: manual deploy workflow that builds/pushes image to ECR and rolls out to EKS.
 
 Detailed guide:

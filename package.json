@@ -16,6 +16,7 @@
     "cicd:deploy:eks:wsl": "wsl -d Ubuntu -- bash -lc '~/MoraAI/infra/deploy-cicd-to-eks.sh'",
     "test": "echo \"No automated tests configured yet\"",
     "docker:up": "docker compose up -d --build",
+    "docker:up:ollama": "docker compose --profile local-llm up -d --build",
     "docker:down": "docker compose down"
   },
   "keywords": [

@@ -54,9 +54,9 @@ register.registerMetric(rcaLatency);
 // Configuration
 // ---------------------------------------------------------------------------
 const RCA_API_URL = process.env.RCA_API_URL || '';
-const OLLAMA_URL = process.env.OLLAMA_URL || 'http://ollama:11434';
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://127.0.0.1:11434';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama3.2';
-const OLLAMA_ENABLED = String(process.env.OLLAMA_ENABLED || 'false').toLowerCase() === 'true';
+const OLLAMA_ENABLED = String(process.env.OLLAMA_ENABLED || 'true').toLowerCase() === 'true';
 const PROVIDER_STATUS_CACHE_TTL_MS = Number(process.env.PROVIDER_STATUS_CACHE_TTL_MS || 30000);
 const BEDROCK_MODEL_ID = process.env.BEDROCK_MODEL_ID || 'amazon.nova-lite-v1:0';
 const BEDROCK_RUNTIME_ROLE_ARN = process.env.BEDROCK_RUNTIME_ROLE_ARN || '';

@@ -12,16 +12,15 @@ Trigger:
 - Pull request
 
 What it does:
-1. Checks out code.
-2. Sets up Node.js 20 with npm cache.
-3. Installs backend and frontend dependencies.
-4. Runs backend syntax validation (`node --check server.js`).
-5. Builds frontend (`npm --prefix frontend run build`).
-6. Builds Docker image (`docker build`).
+1. `backend-check`: installs backend dependencies and validates `server.js` syntax.
+2. `frontend-build`: installs frontend dependencies and builds Vite app.
+3. `api-smoke`: starts backend and verifies `/health` endpoint.
+4. `docker-build`: builds production Docker image after earlier checks pass.
 
 Why this matters:
 - Pull requests fail early when frontend build breaks.
 - Docker build validates deployment packaging before merge.
+- The pipeline visually demonstrates stage-by-stage CI progression for demos.
 
 ## 2) CD workflow (`cd-eks.yml`)
 

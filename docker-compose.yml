@@ -7,7 +7,7 @@ services:
     environment:
       - PORT=3000
       - OLLAMA_URL=http://ollama:11434
-      - OLLAMA_ENABLED=${OLLAMA_ENABLED:-false}
+      - OLLAMA_ENABLED=${OLLAMA_ENABLED:-true}
       - RCA_API_URL=${RCA_API_URL:-}
       - BEDROCK_RUNTIME_ROLE_ARN=${BEDROCK_RUNTIME_ROLE_ARN:-}
       - BEDROCK_MODEL_ID=${BEDROCK_MODEL_ID:-amazon.nova-lite-v1:0}
