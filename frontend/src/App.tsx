@@ -191,6 +191,11 @@ export default function App() {
                 <MetricTile label="Open Incidents" value={String(data?.overview.openIncidents ?? 0)} tone="amber" />
                 <MetricTile label="Critical Incidents" value={String(data?.overview.criticalIncidents ?? 0)} tone="rose" />
               </div>
+              <div className="mt-5 grid gap-5 md:grid-cols-3">
+                <InfoCard title="Prometheus" body="Scrapes the app metrics endpoint at /metrics and stores pipeline + RCA activity over time. Open it locally at http://localhost:9090." />
+                <InfoCard title="Grafana" body="Reads from Prometheus and shows the MoraAI dashboard. Open it locally at http://localhost:3001 with admin / admin123." />
+                <InfoCard title="Pipeline Activity" body="Trigger a pipeline from the Home page to generate incidents, change status, and populate the graphs and counters." />
+              </div>
               <div className="mt-5 rounded-2xl border border-white/15 bg-white/5 p-5 text-sm text-white/75">
                 Metrics include HTTP request totals, pipeline outcomes, open incident gauge, RCA request counts by provider, provider health gauges, and last-request latency.
               </div>
