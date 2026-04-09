@@ -414,6 +414,8 @@ function ProviderPanel({ providerName, provider }: { providerName: string; provi
   const statusClass =
     provider?.status === "available"
       ? "bg-green-500/20 text-green-300"
+      : provider?.status === "pulling"
+        ? "bg-amber-500/20 text-amber-300"
       : provider?.status === "disabled"
         ? "bg-white/10 text-white/70"
         : "bg-red-500/20 text-red-300";

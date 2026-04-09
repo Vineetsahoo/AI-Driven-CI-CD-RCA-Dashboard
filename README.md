@@ -6,7 +6,7 @@ The project now runs as a React + TypeScript + Tailwind SaaS-style frontend back
 - SaaS template UI (React + Tailwind + shadcn-compatible structure)
 - Multi-page product content routes (Home, Platform, Bedrock, Ollama, Observability, Docs)
 - Live RCA provider status (Bedrock Nova -> Ollama -> Local fallback chain)
-- Ollama requests now skip cleanly to local classification when the configured model is missing or unreachable
+- Ollama auto-pulls the configured model on startup when it is missing, then falls back locally until it is ready
 - Incident trigger and remediation workflow (trigger -> approve -> execute)
 - Backend metrics endpoint for Prometheus (`/metrics`)
 - Unified dashboard API for frontend (`/api/saas/dashboard`)

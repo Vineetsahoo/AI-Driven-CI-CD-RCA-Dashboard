@@ -58,7 +58,7 @@ The assumed role should allow:
 - Build flow: React app compiles to `frontend/dist` and is served by Express.
 - Runtime flow: backend API routes (`/api/saas/*`) drive incidents and remediation.
 - RCA flow: Bedrock -> Ollama -> local fallback chain.
-- If the configured Ollama model is missing, the backend now skips repeated Ollama attempts and falls back locally.
+- If the configured Ollama model is missing, the backend auto-pulls it and exposes a temporary `pulling` state.
 - Deploy flow: GitHub Actions builds image -> pushes to ECR -> updates EKS deployment.
 
 ## 5) Notes for Ollama in deployment

@@ -49,6 +49,7 @@ Set environment values as needed:
 - `OLLAMA_ENABLED=true`
 - `OLLAMA_MODEL=llama3.2` (or your preferred model)
 - `OLLAMA_URL=http://ollama:11434`
+- `OLLAMA_AUTO_PULL=true` to pull the configured model automatically when missing
 
 Stop stack:
 
