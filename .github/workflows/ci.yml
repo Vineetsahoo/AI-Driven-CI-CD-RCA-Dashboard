@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - "**"
@@ -72,9 +73,20 @@ jobs:
 
       - name: Start backend and check health
         run: |
-          node server.js &
-          sleep 3
-          curl -f http://127.0.0.1:3000/health
+          node server.js > /tmp/moraai-backend.log 2>&1 &
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -fsS http://127.0.0.1:3000/health; then
+              break
+            fi
+            if [ "$attempt" -eq 10 ]; then
+              cat /tmp/moraai-backend.log
+              exit 1
+            fi
+            sleep 2
+          done
+
+      - name: Check RCA providers endpoint
+        run: curl -f http://127.0.0.1:3000/api/rca/providers
 
   docker-build:
     runs-on: ubuntu-latest

@@ -83,7 +83,13 @@ let providerStatusCache = {
     model: BEDROCK_MODEL_ID,
     status: RCA_API_URL ? 'unknown' : 'not-configured'
   },
-  ollama: { configured: OLLAMA_ENABLED, url: OLLAMA_URL, model: OLLAMA_MODEL, status: OLLAMA_ENABLED ? 'unknown' : 'disabled' },
+  ollama: {
+    configured: OLLAMA_ENABLED,
+    url: OLLAMA_URL,
+    model: OLLAMA_MODEL,
+    models: [],
+    status: OLLAMA_ENABLED ? 'unknown' : 'disabled'
+  },
   local: { configured: true, status: 'available' }
 };
 let providerStatusLastFetchedAt = 0;
@@ -97,6 +103,38 @@ function updateProviderHealthMetrics(providers) {
   rcaProviderUp.set({ provider: 'bedrock' }, providers.bedrock?.status === 'available' ? 1 : 0);
   rcaProviderUp.set({ provider: 'ollama' }, providers.ollama?.status === 'available' ? 1 : 0);
   rcaProviderUp.set({ provider: 'local' }, 1);
+}
+
+function normalizeOllamaModelName(name) {
+  return String(name || '').trim();
+}
+
+function isOllamaModelAvailable(modelName, availableModels = []) {
+  const normalizedTarget = normalizeOllamaModelName(modelName);
+  if (!normalizedTarget) {
+    return false;
+  }
+
+  return availableModels.some((name) => {
+    const normalizedName = normalizeOllamaModelName(name);
+    return normalizedName === normalizedTarget || normalizedName.startsWith(`${normalizedTarget}:`);
+  });
+}
+
+function markOllamaUnavailable(status = 'unavailable', models = []) {
+  providerStatusCache = {
+    ...providerStatusCache,
+    ollama: {
+      ...providerStatusCache.ollama,
+      configured: OLLAMA_ENABLED,
+      url: OLLAMA_URL,
+      model: OLLAMA_MODEL,
+      models,
+      status
+    }
+  };
+  providerStatusLastFetchedAt = Date.now();
+  updateProviderHealthMetrics(providerStatusCache);
 }
 
 async function refreshRCAProvidersStatus() {
@@ -114,8 +152,10 @@ async function refreshRCAProvidersStatus() {
   if (OLLAMA_ENABLED) {
     try {
       const ollamaRes = await axios.get(`${OLLAMA_URL}/api/tags`, { timeout: 1500 });
-      providers.ollama.status = 'available';
       providers.ollama.models = (ollamaRes.data.models || []).map((m) => m.name);
+      providers.ollama.status = isOllamaModelAvailable(OLLAMA_MODEL, providers.ollama.models)
+        ? 'available'
+        : 'model-missing';
     } catch {
       providers.ollama.status = 'unavailable';
     }
@@ -463,12 +503,27 @@ async function performRCA(logText, pipelineId) {
 
   // 2. Try Ollama (local LLM)
   if (OLLAMA_ENABLED) {
-    try {
-      console.log('[RCA] Attempting Ollama analysis...');
-      return await analyzeWithOllama(logText, pipelineId);
-    } catch (err) {
-      console.warn('[RCA] Ollama failed, falling back to local:', err.message);
-      rcaRequestsTotal.inc({ provider: 'ollama', status: 'error' });
+    const providerStatus = getRCAProvidersStatus();
+    const ollamaStatus = providerStatus.ollama?.status;
+
+    if (ollamaStatus !== 'available') {
+      console.log(
+        `[RCA] Ollama is ${ollamaStatus || 'unknown'} for model ${OLLAMA_MODEL}; skipping to local fallback`
+      );
+    } else {
+      try {
+        console.log('[RCA] Attempting Ollama analysis...');
+        return await analyzeWithOllama(logText, pipelineId);
+      } catch (err) {
+        console.warn('[RCA] Ollama failed, falling back to local:', err.message);
+        rcaRequestsTotal.inc({ provider: 'ollama', status: 'error' });
+
+        if (err.response && err.response.status === 404) {
+          markOllamaUnavailable('model-missing');
+        } else {
+          markOllamaUnavailable('unavailable');
+        }
+      }
     }
   } else {
     console.log('[RCA] Ollama disabled by configuration, skipping to local fallback');

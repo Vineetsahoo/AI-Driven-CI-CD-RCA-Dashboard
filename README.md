@@ -6,6 +6,7 @@ The project now runs as a React + TypeScript + Tailwind SaaS-style frontend back
 - SaaS template UI (React + Tailwind + shadcn-compatible structure)
 - Multi-page product content routes (Home, Platform, Bedrock, Ollama, Observability, Docs)
 - Live RCA provider status (Bedrock Nova -> Ollama -> Local fallback chain)
+- Ollama requests now skip cleanly to local classification when the configured model is missing or unreachable
 - Incident trigger and remediation workflow (trigger -> approve -> execute)
 - Backend metrics endpoint for Prometheus (`/metrics`)
 - Unified dashboard API for frontend (`/api/saas/dashboard`)
@@ -84,6 +85,7 @@ Metrics endpoint exposed by backend:
 ## GitHub Actions Flow
 
 - `ci.yml`: install dependencies, validate backend syntax, build frontend, build Docker image.
+- `ci.yml`: waits for backend readiness and checks the RCA provider status endpoint.
 - `ci.yml`: multi-stage jobs (`backend-check`, `frontend-build`, `api-smoke`, `docker-build`).
 - `cd-eks.yml`: manual deploy workflow that builds/pushes image to ECR and rolls out to EKS.
 

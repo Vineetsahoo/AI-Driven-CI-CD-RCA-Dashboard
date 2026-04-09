@@ -14,7 +14,7 @@ Trigger:
 What it does:
 1. `backend-check`: installs backend dependencies and validates `server.js` syntax.
 2. `frontend-build`: installs frontend dependencies and builds Vite app.
-3. `api-smoke`: starts backend and verifies `/health` endpoint.
+3. `api-smoke`: starts backend, waits for readiness, and verifies `/health` plus `/api/rca/providers`.
 4. `docker-build`: builds production Docker image after earlier checks pass.
 
 Why this matters:
@@ -58,6 +58,7 @@ The assumed role should allow:
 - Build flow: React app compiles to `frontend/dist` and is served by Express.
 - Runtime flow: backend API routes (`/api/saas/*`) drive incidents and remediation.
 - RCA flow: Bedrock -> Ollama -> local fallback chain.
+- If the configured Ollama model is missing, the backend now skips repeated Ollama attempts and falls back locally.
 - Deploy flow: GitHub Actions builds image -> pushes to ECR -> updates EKS deployment.
 
 ## 5) Notes for Ollama in deployment
