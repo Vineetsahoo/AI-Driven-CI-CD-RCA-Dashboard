@@ -53,7 +53,7 @@ services:
       - OLLAMA_HOST=http://ollama:11434
       - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3.2}
     entrypoint: ["/bin/sh", "-c"]
-    command: "ollama pull ${OLLAMA_MODEL}"
+    command: "ollama pull ${OLLAMA_MODEL:-llama3.2}"
     restart: "no"
 
   prometheus:
