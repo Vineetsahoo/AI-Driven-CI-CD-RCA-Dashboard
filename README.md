@@ -11,6 +11,8 @@ The project now runs as a React + TypeScript + Tailwind SaaS-style frontend back
 - Backend metrics endpoint for Prometheus (`/metrics`)
 - Unified dashboard API for frontend (`/api/saas/dashboard`)
 - GitHub Actions CI and manual CD-to-EKS workflows under `.github/workflows`
+- Jenkins pipeline support via a root-level `Jenkinsfile` for cloud execution
+- Optional SonarCloud quality gate integrated into GitHub Actions when secrets are configured
 
 ## Local Run
 ```bash
@@ -86,8 +88,10 @@ Metrics endpoint exposed by backend:
 
 - `ci.yml`: install dependencies, validate backend syntax, build frontend, build Docker image.
 - `ci.yml`: waits for backend readiness and checks the RCA provider status endpoint.
-- `ci.yml`: multi-stage jobs (`backend-check`, `frontend-build`, `api-smoke`, `docker-build`).
+- `ci.yml`: optional SonarCloud scan when `SONAR_TOKEN`, `SONAR_ORGANIZATION`, and `SONAR_PROJECT_KEY` are configured.
+- `ci.yml`: multi-stage jobs (`backend-check`, `frontend-build`, `api-smoke`, `sonar-scan`, `docker-build`).
 - `cd-eks.yml`: manual deploy workflow that builds/pushes image to ECR and rolls out to EKS.
+- `Jenkinsfile`: cloud pipeline support for Bedrock RCA smoke test and optional SonarCloud quality gate.
 
 Detailed guide:
 - `docs/github-actions-cicd-guide.md`

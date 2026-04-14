@@ -2,6 +2,36 @@
 
 This document explains the project from start to finish so the full working model is easy to explain in a demo or handoff.
 
+## Project Flow Diagram
+
+Use this Mermaid chart if you want a visual version of the full request and remediation flow:
+
+```mermaid
+flowchart TD
+	A[User / Browser] --> B[React Dashboard\nfrontend/src/App.tsx]
+	B --> C[Express API\nserver.js]
+
+	C --> D[Load dashboard data\n/api/saas/dashboard]
+	C --> E[Trigger simulated failure\n/api/saas/trigger]
+	C --> F[Approve remediation\n/api/saas/incidents/:id/approve]
+	C --> G[Execute remediation\n/api/saas/incidents/:id/execute]
+
+	E --> H[RCA Engine\nBedrock -> Ollama -> Local]
+	H --> I[Failure classification\ncategory, severity, stage, explanation, remediation]
+	I --> J[Incident created / updated]
+	F --> K[Incident approved]
+	G --> L[Pipeline restored\nincident resolved]
+
+	J --> M[Dashboard refreshes]
+	K --> M
+	L --> M
+	D --> M
+
+	C --> N[Prometheus metrics\n/metrics]
+	N --> O[Grafana / observability]
+	M --> B
+```
+
 ## 1. What the project does
 
 MoraAI is an AI-driven CI/CD failure analysis platform. It shows a live dashboard for pipeline health, triggers simulated failures, analyzes the failure with an RCA engine, and lets an operator approve and execute remediation.

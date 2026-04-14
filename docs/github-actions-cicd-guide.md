@@ -15,7 +15,30 @@ What it does:
 1. `backend-check`: installs backend dependencies and validates `server.js` syntax.
 2. `frontend-build`: installs frontend dependencies and builds Vite app.
 3. `api-smoke`: starts backend, waits for readiness, and verifies `/health` plus `/api/rca/providers`.
-4. `docker-build`: builds production Docker image after earlier checks pass.
+4. `sonar-scan`: optionally runs SonarCloud analysis when GitHub secrets are configured.
+5. `docker-build`: builds production Docker image after earlier checks pass.
+
+### 1.1) SonarCloud monitoring phase (optional)
+
+The CI workflow now supports SonarCloud as a monitoring and code-quality phase. To enable it, add the following repository secrets in GitHub:
+- `SONAR_TOKEN`
+- `SONAR_ORGANIZATION`
+- `SONAR_PROJECT_KEY`
+
+When these secrets are present, `ci.yml` will run the `sonar-scan` job and use `sonar-project.properties` at the repository root.
+
+### 1.2) Jenkins cloud pipeline
+
+A root-level `Jenkinsfile` is included to support a Jenkins-based cloud pipeline.
+It performs the following stages:
+- checkout source code
+- install backend and frontend dependencies
+- backend syntax validation
+- frontend build
+- optional SonarCloud quality gate when Jenkins environment variables are provided
+- start the backend service and run Bedrock RCA smoke tests against `/api/rca/providers` and `/api/rca/analyze`
+
+This lets Jenkins show the cloud pipeline progress while validating the failure analysis layer and Bedrock RCA integration.
 
 Why this matters:
 - Pull requests fail early when frontend build breaks.
