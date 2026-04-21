@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_URL="http://44.198.166.96:3000"
-GRAFANA_URL="http://44.198.166.96:3001"
-PROM_URL="http://44.198.166.96:9090"
-RCA_API_URL="https://n52ix6pw08.execute-api.us-east-1.amazonaws.com/prod/analyze"
+APP_URL="${APP_URL:-http://PENDING_EC2_IP:3000}"
+GRAFANA_URL="${GRAFANA_URL:-http://PENDING_EC2_IP:3001}"
+PROM_URL="${PROM_URL:-http://PENDING_EC2_IP:9090}"
+RCA_API_URL="${RCA_API_URL:-https://PENDING_RCA_API_URL}"
 
 check() {
   local name="$1"

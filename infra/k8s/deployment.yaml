@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: moraai-platform
-          image: 982081089142.dkr.ecr.us-east-1.amazonaws.com/moraai:latest
+          image: 818825274841.dkr.ecr.us-east-1.amazonaws.com/moraai:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000

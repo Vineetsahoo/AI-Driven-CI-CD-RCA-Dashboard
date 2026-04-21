@@ -89,7 +89,7 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public" {
-  count = length(aws_subnet.public)
+  count = length(var.public_subnet_cidrs)
 
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
@@ -317,6 +317,7 @@ resource "aws_eks_cluster" "platform" {
 
   name     = var.eks_cluster_name
   role_arn = aws_iam_role.eks_cluster[0].arn
+  bootstrap_self_managed_addons = false
 
   vpc_config {
     subnet_ids              = [for s in aws_subnet.public : s.id]

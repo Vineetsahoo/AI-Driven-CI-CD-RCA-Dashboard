@@ -2,7 +2,7 @@ pipeline {
   agent any
   environment {
     NODE_VERSION = '20'
-    SONAR_HOST_URL = 'https://sonarcloud.io'
+    SONAR_HOST_URL = 'http://localhost:9000'
     APP_PORT = '3000'
     BEDROCK_MODEL_ID = "${env.BEDROCK_MODEL_ID ?: 'amazon.nova-lite-v1:0'}"
     BEDROCK_RUNTIME_ROLE_ARN = "${env.BEDROCK_RUNTIME_ROLE_ARN ?: ''}"
@@ -92,29 +92,27 @@ pipeline {
         }
       }
     }
-    stage('SonarCloud quality gate') {
-      when {
-        expression {
-          return env.SONAR_TOKEN && env.SONAR_ORGANIZATION && env.SONAR_PROJECT_KEY
-        }
-      }
+    stage('SonarQube quality gate') {
       steps {
         script {
           sh '''
-            docker run --rm \
-              -e SONAR_TOKEN="$SONAR_TOKEN" \
-              -e SONAR_ORGANIZATION="$SONAR_ORGANIZATION" \
-              -e SONAR_PROJECT_KEY="$SONAR_PROJECT_KEY" \
-              -v "$PWD":/usr/src \
-              -w /usr/src \
-              sonarsource/sonar-scanner-cli:latest \
-              sonar-scanner \
-                -Dsonar.login="$SONAR_TOKEN" \
-                -Dsonar.organization="$SONAR_ORGANIZATION" \
-                -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
-                -Dsonar.host.url="$SONAR_HOST_URL" \
-                -Dsonar.sources=. \
-                -Dsonar.exclusions=node_modules/**,frontend/node_modules/**,frontend/dist/**,.git/**,**/*.md,**/*.yml,**/*.yaml,**/*.json
+            # Install sonar-scanner if not present
+            if ! command -v sonar-scanner &> /dev/null; then
+              echo "Installing SonarQube scanner..."
+              cd /tmp
+              wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-6.2.0.4589-linux.zip
+              unzip -q sonar-scanner-cli-6.2.0.4589-linux.zip
+              export PATH=$PATH:/tmp/sonar-scanner-6.2.0.4589-linux/bin
+            fi
+            
+            # Run SonarQube analysis
+            sonar-scanner \
+              -Dsonar.login="${SONAR_TOKEN}" \
+              -Dsonar.projectKey=moraai-ci-cd \
+              -Dsonar.projectName="MoraAI CI/CD Failure Analysis" \
+              -Dsonar.host.url="${SONAR_HOST_URL}" \
+              -Dsonar.sources=. \
+              -Dsonar.exclusions=node_modules/**,frontend/node_modules/**,frontend/dist/**,.git/**,**/*.md,**/*.yml,**/*.yaml,**/*.json
           '''
         }
       }

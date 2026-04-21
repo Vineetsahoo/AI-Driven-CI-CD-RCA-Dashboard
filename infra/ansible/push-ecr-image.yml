@@ -5,7 +5,7 @@
   become: false
   vars:
     aws_region: us-east-1
-    ecr_registry: 982081089142.dkr.ecr.us-east-1.amazonaws.com
+    ecr_registry: 818825274841.dkr.ecr.us-east-1.amazonaws.com
     ecr_repository: moraai
     image_tag: latest
     project_root: /opt/MoraAI
