@@ -131,11 +131,38 @@ jobs:
               }' || echo "Grafana annotation skipped"
           fi
 
+  sonarqube-scan:
+    runs-on: ubuntu-latest
+    needs: pre-flight-check
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # SonarQube requires full git history
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: |
+             -Dsonar.projectKey=moraai-ci-cd
+             -Dsonar.projectName="MoraAI CI/CD Failure Analysis"
+             -Dsonar.sources=.
+             -Dsonar.exclusions=node_modules/**,frontend/node_modules/**,frontend/dist/**,.git/**,**/*.md,**/*.yml,**/*.yaml,**/*.json
+
   api-smoke:
     runs-on: ubuntu-latest
     needs:
       - backend-check
       - frontend-build
+      - sonarqube-scan
     steps:
       - name: Checkout
         uses: actions/checkout@v4
